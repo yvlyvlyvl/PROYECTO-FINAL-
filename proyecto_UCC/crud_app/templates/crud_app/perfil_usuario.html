@@ -1,0 +1,100 @@
+{% extends 'crud_app/base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil — ProyectoUCC{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+  <div class="col-md-6">
+
+    <!-- Tarjeta perfil -->
+    <div class="card shadow mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">👤 Mi Perfil</h5>
+      </div>
+      <div class="card-body p-4">
+
+        <div class="text-center mb-4">
+          <div style="width:80px; height:80px; background:#eff6ff; border-radius:50%;
+                      display:flex; align-items:center; justify-content:center;
+                      margin:0 auto; font-size:2.5rem;">
+            👤
+          </div>
+          <h4 class="mt-3 fw-bold">{{ request.user.username }}</h4>
+          <span class="badge {% if request.user.is_staff %}bg-danger{% else %}bg-primary{% endif %}">
+            {% if request.user.is_staff %}Administrador{% else %}Usuario{% endif %}
+          </span>
+        </div>
+
+        <hr>
+
+        <!-- Formulario cambiar correo -->
+        <h6 class="fw-bold mb-3">📧 Cambiar Correo</h6>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Correo actual</label>
+            <input type="text" class="form-control"
+                   value="{{ request.user.email|default:'Sin correo registrado' }}" disabled>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nuevo correo</label>
+            <input type="email" class="form-control" name="email"
+                   placeholder="Ingresa tu nuevo correo" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">💾 Actualizar Correo</button>
+        </form>
+
+        <hr class="mt-4">
+
+        <!-- Botón cambiar contraseña -->
+        <h6 class="fw-bold mb-3">🔐 Contraseña</h6>
+        <a href="{% url 'cambiar_contrasena' %}" class="btn btn-outline-danger w-100">
+          🔑 Cambiar Contraseña
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Info adicional -->
+    <div class="card shadow">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">📋 Información de la cuenta</h5>
+      </div>
+      <div class="card-body">
+        <table class="table mb-0">
+          <tr>
+            <td class="fw-bold">Usuario</td>
+            <td>{{ request.user.username }}</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Correo</td>
+            <td>{{ request.user.email|default:'—' }}</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Miembro desde</td>
+            <td>{{ request.user.date_joined|date:"d/m/Y" }}</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Último acceso</td>
+            <td>{{ request.user.last_login|date:"d/m/Y H:i" }}</td>
+          </tr>
+          <tr>
+            <td class="fw-bold">Tipo</td>
+            <td>
+              {% if request.user.is_staff %}
+                <span class="badge bg-danger">Administrador</span>
+              {% else %}
+                <span class="badge bg-primary">Usuario</span>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

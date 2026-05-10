@@ -1,0 +1,107 @@
+{% extends 'crud_app/base.html' %}
+
+{% block title %}Cambiar Contraseña — ProyectoUCC{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+  <div class="col-md-5">
+    <div class="card shadow">
+      <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">🔑 Cambiar Contraseña</h5>
+      </div>
+      <div class="card-body p-4">
+
+        <form method="POST" id="cambiarForm">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Contraseña actual</label>
+            <div class="input-group">
+              <input type="password" class="form-control" name="contrasena_actual"
+                     id="passActual" placeholder="Tu contraseña actual" required>
+              <button type="button" class="btn btn-outline-secondary"
+                      onclick="togglePass('passActual', this)">👁️</button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Nueva contraseña</label>
+            <div class="input-group">
+              <input type="password" class="form-control" name="contrasena_nueva"
+                     id="passNueva" placeholder="Mínimo 6 caracteres" required>
+              <button type="button" class="btn btn-outline-secondary"
+                      onclick="togglePass('passNueva', this)">👁️</button>
+            </div>
+            <div class="progress mt-2 mb-1">
+              <div id="strengthBar" class="progress-bar" style="width:0%"></div>
+            </div>
+            <small id="strengthText"></small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Confirmar nueva contraseña</label>
+            <div class="input-group">
+              <input type="password" class="form-control" name="contrasena_confirmar"
+                     id="passConfirmar" placeholder="Repite la nueva contraseña" required>
+              <button type="button" class="btn btn-outline-secondary"
+                      onclick="togglePass('passConfirmar', this)">👁️</button>
+            </div>
+            <small id="passError" class="text-danger"></small>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-danger w-100">💾 Cambiar Contraseña</button>
+            <a href="{% url 'perfil_usuario' %}" class="btn btn-secondary w-100">Cancelar</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePass(id, btn) {
+    const input = document.getElementById(id);
+    const type  = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    btn.textContent = type === 'password' ? '👁️' : '🙈';
+  }
+
+  const passNueva     = document.getElementById('passNueva');
+  const passConfirmar = document.getElementById('passConfirmar');
+  const passError     = document.getElementById('passError');
+  const strengthBar   = document.getElementById('strengthBar');
+  const strengthText  = document.getElementById('strengthText');
+
+  passNueva.addEventListener('keyup', function () {
+    const val = passNueva.value;
+    let strength = 0;
+    if (val.length >= 6) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[@$!%*?&#]/.test(val)) strength++;
+
+    if (strength <= 1) {
+      strengthBar.style.width = '33%';
+      strengthBar.className = 'progress-bar bg-danger';
+      strengthText.textContent = 'Contraseña débil';
+    } else if (strength === 2) {
+      strengthBar.style.width = '66%';
+      strengthBar.className = 'progress-bar bg-warning';
+      strengthText.textContent = 'Contraseña media';
+    } else {
+      strengthBar.style.width = '100%';
+      strengthBar.className = 'progress-bar bg-success';
+      strengthText.textContent = 'Contraseña fuerte';
+    }
+  });
+
+  passConfirmar.addEventListener('keyup', function () {
+    passError.textContent = (passNueva.value !== passConfirmar.value)
+      ? '⚠ Las contraseñas no coinciden' : '';
+  });
+</script>
+
+{% endblock %}

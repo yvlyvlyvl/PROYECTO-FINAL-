@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Pagos — Hotel Casa Marco</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --naranja: #E8920A; --azul-dark: #0D1B2A; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 230px; background: white; border-right: 1px solid #eee;
+      display: flex; flex-direction: column; padding: 24px 0;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #eee; font-size: 1.1rem; font-weight: 900; color: var(--azul-dark); }
+    .sidebar-logo span { color: var(--naranja); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px; padding: 12px 24px;
+      color: #555; text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: #fff8ee; color: var(--azul-dark); border-left-color: var(--naranja); font-weight: 700;
+    }
+    .sidebar-nav .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .sidebar-logout { padding: 16px 24px; border-top: 1px solid #eee; }
+    .sidebar-logout a { display: flex; align-items: center; gap: 12px; color: #e53935; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+    .main { margin-left: 230px; padding: 36px 40px; flex: 1; }
+    .page-title { font-size: 1.7rem; font-weight: 800; color: var(--azul-dark); margin-bottom: 4px; }
+    .page-sub { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+
+    .pagos-lista { display: flex; flex-direction: column; gap: 16px; }
+
+    .pago-card {
+      background: white; border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #eee;
+      overflow: hidden; transition: box-shadow 0.2s;
+    }
+    .pago-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.11); }
+
+    .pago-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 24px; border-bottom: 1px solid #f5f5f5; flex-wrap: wrap; gap: 12px;
+    }
+    .pago-ref { font-size: 1rem; font-weight: 800; color: var(--azul-dark); }
+    .pago-fecha { font-size: 0.82rem; color: #aaa; margin-top: 2px; }
+
+    .badge-estado {
+      display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+    }
+    .badge-confirmado  { background: #d4edda; color: #155724; }
+    .badge-pendiente   { background: #fff3cd; color: #856404; }
+    .badge-rechazado   { background: #f8d7da; color: #721c24; }
+    .badge-reembolsado { background: #cce5ff; color: #004085; }
+
+    .pago-body { padding: 18px 24px; }
+
+    .pago-info-row {
+      display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .pago-info-item { display: flex; flex-direction: column; gap: 2px; }
+    .pago-info-label { font-size: 0.72rem; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pago-info-valor { font-size: 0.95rem; font-weight: 700; color: var(--azul-dark); }
+    .pago-total { font-size: 1.5rem; font-weight: 900; color: var(--naranja); }
+
+    .pago-acciones { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid #f5f5f5; }
+
+    .btn-cancelar-pago {
+      padding: 9px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      background: #fee2e2; color: #991b1b; border: none; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-cancelar-pago:hover { background: #991b1b; color: white; }
+
+    .btn-ver-reserva {
+      padding: 9px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      background: #dbeafe; color: #1d4ed8; text-decoration: none; transition: opacity 0.2s;
+    }
+    .btn-ver-reserva:hover { opacity: 0.8; color: #1d4ed8; }
+
+    .empty-state {
+      text-align: center; padding: 80px 20px; background: white;
+      border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
+    .empty-state h4 { color: var(--azul-dark); font-weight: 700; }
+    .empty-state p { color: #aaa; font-size: 0.9rem; margin-top: 8px; }
+    .btn-explorar {
+      display: inline-block; margin-top: 20px; padding: 12px 28px;
+      background: var(--naranja); color: white; border-radius: 10px;
+      font-weight: 700; text-decoration: none;
+    }
+    .btn-explorar:hover { background: #C97D08; color: white; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🏨 Casa <span>Marco</span></div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'home' %}"><span class="icon">🏠</span> Inicio</a>
+    <a href="{% url 'reservar_habitacion' %}"><span class="icon">🛏️</span> Reservar Habitación</a>
+    <a href="{% url 'mis_reservas' %}"><span class="icon">📅</span> Mis Reservas</a>
+    <a href="{% url 'historial_estadias' %}"><span class="icon">📋</span> Historial Estadías</a>
+    <a href="{% url 'mis_pagos' %}" class="active"><span class="icon">💳</span> Mis Pagos</a>
+    <a href="{% url 'favoritos' %}"><span class="icon">❤️</span> Favoritos</a>
+    <a href="{% url 'notificaciones' %}"><span class="icon">🔔</span> Notificaciones</a>
+    <a href="{% url 'perfil_usuario' %}"><span class="icon">👤</span> Mi Perfil</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a href="{% url 'logout' %}"><span class="icon">🚪</span> Cerrar sesión</a>
+  </div>
+</aside>
+
+<main class="main">
+  <h1 class="page-title">💳 Mis Pagos</h1>
+  <p class="page-sub">Historial de todos tus pagos realizados.</p>
+
+  {% if pagos %}
+  <div class="pagos-lista">
+    {% for pago in pagos %}
+    <div class="pago-card">
+
+      <div class="pago-header">
+        <div>
+          <div class="pago-ref">🧾 Ref: {{ pago.referencia }}</div>
+          <div class="pago-fecha">📅 {{ pago.fecha_pago|date:"d/m/Y H:i" }}</div>
+        </div>
+        <span class="badge-estado badge-{{ pago.estado }}">{{ pago.get_estado_display }}</span>
+      </div>
+
+      <div class="pago-body">
+        <div class="pago-info-row">
+          <div class="pago-info-item">
+            <span class="pago-info-label">Reserva</span>
+            <span class="pago-info-valor">{{ pago.reserva.codigo }}</span>
+          </div>
+          <div class="pago-info-item">
+            <span class="pago-info-label">Habitación</span>
+            <span class="pago-info-valor">Hab. {{ pago.reserva.habitacion.numero }}</span>
+          </div>
+          <div class="pago-info-item">
+            <span class="pago-info-label">Método</span>
+            <span class="pago-info-valor">{{ pago.get_metodo_display }}</span>
+          </div>
+          {% if pago.metodo == 'tarjeta' and pago.numero_tarjeta %}
+          <div class="pago-info-item">
+            <span class="pago-info-label">Tarjeta</span>
+            <span class="pago-info-valor">•••• {{ pago.numero_tarjeta }}</span>
+          </div>
+          {% endif %}
+          {% if pago.banco %}
+          <div class="pago-info-item">
+            <span class="pago-info-label">Banco</span>
+            <span class="pago-info-valor">{{ pago.banco }}</span>
+          </div>
+          {% endif %}
+          <div class="pago-info-item">
+            <span class="pago-info-label">Total</span>
+            <span class="pago-total">${{ pago.total|floatformat:0 }}</span>
+          </div>
+        </div>
+
+        <div class="pago-acciones">
+          <a href="{% url 'mis_reservas' %}" class="btn-ver-reserva">
+            📋 Ver Reserva
+          </a>
+          {% if pago.estado == 'pendiente' or pago.estado == 'confirmado' %}
+  {% if pago.reserva.estado == 'pendiente' %}
+  <button class="btn-cancelar-pago"
+          onclick="if(confirm('¿Cancelar el pago {{ pago.referencia }}?')) window.location='{% url 'cancelar_pago' pago.pk %}'">
+    ❌ Cancelar Pago
+  </button>
+  {% endif %}
+{% endif %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">💳</div>
+    <h4>No tienes pagos registrados</h4>
+    <p>Realiza una reserva y procede al pago.</p>
+    <a href="{% url 'reservar_habitacion' %}" class="btn-explorar">🛏️ Ver Habitaciones</a>
+  </div>
+  {% endif %}
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+<script>
+  {% for message in messages %}
+  Swal.fire({
+    icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+    title: '{{ message }}',
+    confirmButtonText: 'Aceptar',
+    timer: 3000,
+    customClass: {
+      popup: 'swal-pequeño'
+    }
+  });
+  {% endfor %}
+</script>
+{% endif %}
+</body>
+</html>
