@@ -1,0 +1,415 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar Habitación — Hotel Casa Marco</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --naranja: #E8920A; --azul-dark: #0D1B2A; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 230px; background: white; border-right: 1px solid #eee;
+      display: flex; flex-direction: column; padding: 24px 0;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #eee; font-size: 1.1rem; font-weight: 900; color: var(--azul-dark); }
+    .sidebar-logo span { color: var(--naranja); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px; padding: 12px 24px;
+      color: #555; text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: #fff8ee; color: var(--azul-dark); border-left-color: var(--naranja); font-weight: 700;
+    }
+    .sidebar-nav .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .sidebar-logout { padding: 16px 24px; border-top: 1px solid #eee; }
+    .sidebar-logout a { display: flex; align-items: center; gap: 12px; color: #e53935; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+    .main { margin-left: 230px; padding: 36px 40px; flex: 1; }
+    .page-title { font-size: 1.7rem; font-weight: 800; color: var(--azul-dark); margin-bottom: 4px; }
+    .page-sub { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+
+    /* Filtros */
+    .filtros { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+    .filtro-btn {
+      padding: 8px 18px; border-radius: 20px; border: 2px solid #e0e0e0;
+      background: white; color: #666; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .filtro-btn:hover, .filtro-btn.active {
+      border-color: var(--naranja); background: var(--naranja); color: white;
+    }
+
+    /* Grid habitaciones */
+    .hab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+
+    .hab-card {
+      background: white; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #eee;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hab-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .hab-card.no-disponible { opacity: 0.85; }
+
+    .hab-img { height: 200px; overflow: hidden; position: relative; background: #f0f2f5; cursor: pointer; }
+    .hab-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .hab-card:hover .hab-img img { transform: scale(1.05); }
+    .hab-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 4rem; opacity: 0.3; }
+
+    .hab-precio {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--naranja); color: white;
+      padding: 5px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700;
+    }
+    .hab-tipo-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(13,27,42,0.85); color: white;
+      padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+    }
+    .hab-estado-badge {
+      position: absolute; bottom: 12px; left: 12px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+    }
+    .estado-disponible    { background: #d4edda; color: #155724; }
+    .estado-ocupada       { background: #cce5ff; color: #004085; }
+    .estado-limpieza      { background: #fff3cd; color: #856404; }
+    .estado-mantenimiento { background: #f8d7da; color: #721c24; }
+
+    .hab-foto-count {
+      position: absolute; bottom: 12px; right: 12px;
+      background: rgba(0,0,0,0.6); color: white;
+      padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    }
+
+    .hab-body { padding: 20px; }
+    .hab-numero { font-size: 0.78rem; color: #aaa; font-weight: 600; margin-bottom: 4px; }
+    .hab-nombre { font-size: 1.05rem; font-weight: 800; color: var(--azul-dark); margin-bottom: 8px; }
+    .hab-desc { font-size: 0.82rem; color: #999; line-height: 1.5; margin-bottom: 12px; }
+    .hab-info { display: flex; gap: 14px; font-size: 0.8rem; color: #888; margin-bottom: 14px; flex-wrap: wrap; }
+
+    .amenidades { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .amenidad { font-size: 0.72rem; color: #666; background: #f5f5f5; padding: 3px 10px; border-radius: 20px; }
+
+    .hab-btns { display: flex; flex-direction: column; gap: 8px; }
+
+    .btn-fotos {
+      display: block; width: 100%; padding: 10px; text-align: center;
+      background: #f0f2f5; color: var(--azul-dark); border: none;
+      border-radius: 10px; font-weight: 600; font-size: 0.85rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-fotos:hover { background: #e2e5ea; }
+
+    .btn-reservar {
+      display: block; width: 100%; padding: 12px; text-align: center;
+      background: var(--azul-dark); color: white; border-radius: 10px;
+      text-decoration: none; font-weight: 700; font-size: 0.9rem;
+      transition: background 0.2s; border: none; cursor: pointer;
+    }
+    .btn-reservar:hover { background: var(--naranja); color: white; }
+    .btn-reservar:disabled, .btn-reservar.disabled {
+      background: #ccc; color: #888; cursor: not-allowed; opacity: 0.6;
+    }
+    .btn-reservar.disabled:hover { background: #ccc; color: #888; }
+
+    .btn-fav {
+      display: block; width: 100%; padding: 10px; text-align: center;
+      background: #fff8ee; color: var(--naranja); border-radius: 10px;
+      text-decoration: none; font-weight: 600; font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .btn-fav:hover { background: #ffe0b2; }
+
+    .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 16px; }
+    .empty-state .icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .empty-state h4 { color: var(--azul-dark); font-weight: 700; }
+    .empty-state p { color: #aaa; font-size: 0.9rem; margin-top: 8px; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85); z-index: 999;
+      align-items: center; justify-content: center; padding: 20px;
+      overflow-y: auto;
+    }
+    .modal-box {
+      background: white; border-radius: 20px; max-width: 750px; width: 100%;
+      overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      animation: modalIn 0.2s ease; margin: auto;
+    }
+    @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .modal-galeria { background: #111; }
+    .modal-main-img-wrap {
+      max-height: 460px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; background: #111;
+    }
+    .modal-main-img-wrap img { width: 100%; height: auto; max-height: 460px; object-fit: contain; }
+    .modal-main-placeholder { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; font-size: 5rem; opacity: 0.2; }
+
+    .modal-thumbs {
+      display: flex; gap: 6px; padding: 8px 10px;
+      overflow-x: auto; background: #1a1a1a;
+      scrollbar-width: thin; scrollbar-color: #444 #1a1a1a;
+    }
+    .modal-thumbs::-webkit-scrollbar { height: 4px; }
+    .modal-thumbs::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+    .modal-thumb {
+      width: 80px; height: 58px; object-fit: cover; border-radius: 6px;
+      cursor: pointer; opacity: 0.55; transition: all 0.2s; flex-shrink: 0;
+      border: 2px solid transparent;
+    }
+    .modal-thumb:hover { opacity: 0.85; transform: scale(1.05); }
+    .modal-thumb.active { opacity: 1; border-color: var(--naranja); }
+
+    .modal-info {
+      padding: 20px 24px; display: flex;
+      justify-content: space-between; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+    }
+    #modal-titulo { font-size: 1rem; font-weight: 800; color: var(--azul-dark); }
+    .btn-cerrar {
+      padding: 10px 24px; background: var(--azul-dark); color: white;
+      border: none; border-radius: 10px; font-weight: 700; cursor: pointer;
+      font-size: 0.9rem; transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-cerrar:hover { background: #1a3a5c; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🏨 Casa <span>Marco</span></div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'home' %}"><span class="icon">🏠</span> Inicio</a>
+    <a href="{% url 'reservar_habitacion' %}" class="active"><span class="icon">🛏️</span> Reservar Habitación</a>
+    <a href="{% url 'mis_reservas' %}"><span class="icon">📅</span> Mis Reservas</a>
+    <a href="{% url 'historial_estadias' %}"><span class="icon">📋</span> Historial Estadías</a>
+    <a href="{% url 'mis_pagos' %}"><span class="icon">💳</span> Mis Pagos</a>
+    <a href="{% url 'favoritos' %}"><span class="icon">❤️</span> Favoritos</a>
+    <a href="{% url 'notificaciones' %}"><span class="icon">🔔</span> Notificaciones</a>
+    <a href="{% url 'perfil_usuario' %}"><span class="icon">👤</span> Mi Perfil</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a href="{% url 'logout' %}"><span class="icon">🚪</span> Cerrar sesión</a>
+  </div>
+</aside>
+
+<main class="main">
+  <h1 class="page-title">🛏️ Habitaciones</h1>
+  <p class="page-sub">Explora nuestras habitaciones y reserva la que más te guste.</p>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <a href="{% url 'reservar_habitacion' %}"
+       class="filtro-btn {% if not tipo %}active{% endif %}">Todas</a>
+    <a href="?tipo=estandar"
+       class="filtro-btn {% if tipo == 'estandar' %}active{% endif %}">🛏️ Estándar</a>
+    <a href="?tipo=deluxe"
+       class="filtro-btn {% if tipo == 'deluxe' %}active{% endif %}">🛏️ Deluxe</a>
+    <a href="?tipo=suite"
+       class="filtro-btn {% if tipo == 'suite' %}active{% endif %}">⭐ Suite</a>
+    <a href="?tipo=suite_ejecutiva"
+       class="filtro-btn {% if tipo == 'suite_ejecutiva' %}active{% endif %}">👔 Ejecutiva</a>
+    <a href="?tipo=suite_presidencial"
+       class="filtro-btn {% if tipo == 'suite_presidencial' %}active{% endif %}">👑 Presidencial</a>
+    <a href="?tipo=villa"
+       class="filtro-btn {% if tipo == 'villa' %}active{% endif %}">🏡 Villa</a>
+  </div>
+
+  {% if habitaciones %}
+  <div class="hab-grid">
+    {% for hab in habitaciones %}
+    <div class="hab-card {% if hab.estado != 'disponible' %}no-disponible{% endif %}">
+
+      <!-- Imagen -->
+      <div class="hab-img" onclick="verFotos(
+        '{{ hab.get_tipo_display }}',
+        '{{ hab.numero }}',
+        '{% if hab.imagen %}{{ hab.imagen.url }}{% endif %}',
+        [{% for foto in hab.fotos.all %}'{{ foto.imagen.url }}'{% if not forloop.last %},{% endif %}{% endfor %}]
+      )">
+        {% if hab.imagen %}
+          <img src="{{ hab.imagen.url }}" alt="{{ hab.tipo }}">
+        {% elif hab.fotos.first %}
+          <img src="{{ hab.fotos.first.imagen.url }}" alt="{{ hab.tipo }}">
+        {% else %}
+          <div class="hab-img-placeholder">🛏️</div>
+        {% endif %}
+
+        <span class="hab-precio">${{ hab.precio_noche|floatformat:0 }}/noche</span>
+        <span class="hab-tipo-badge">{{ hab.get_tipo_display }}</span>
+        <span class="hab-estado-badge estado-{{ hab.estado }}">{{ hab.get_estado_display }}</span>
+
+        {% with total=hab.fotos.count %}
+        {% if total > 0 %}
+        <span class="hab-foto-count">📷 {{ total }} foto(s)</span>
+        {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- Info -->
+      <div class="hab-body">
+        <div class="hab-numero">Habitación {{ hab.numero }} — Piso {{ hab.piso }}</div>
+        <div class="hab-nombre">{{ hab.get_tipo_display }}</div>
+        <div class="hab-desc">{{ hab.descripcion|truncatechars:90 }}</div>
+        <div class="hab-info">
+          <span>👥 {{ hab.capacidad }} personas</span>
+          <span>🏨 Piso {{ hab.piso }}</span>
+        </div>
+
+        {% if hab.amenidades_lista %}
+        <div class="amenidades">
+          {% for amenidad in hab.amenidades_lista %}
+            <span class="amenidad">{{ amenidad }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="hab-btns">
+          {% if hab.fotos.count > 0 or hab.imagen %}
+          <button class="btn-fotos" onclick="verFotos(
+            '{{ hab.get_tipo_display }}',
+            '{{ hab.numero }}',
+            '{% if hab.imagen %}{{ hab.imagen.url }}{% endif %}',
+            [{% for foto in hab.fotos.all %}'{{ foto.imagen.url }}'{% if not forloop.last %},{% endif %}{% endfor %}]
+          )">📷 Ver fotos ({{ hab.fotos.count }})</button>
+          {% endif %}
+
+          {% if hab.estado == 'disponible' %}
+          <a href="{% url 'confirmar_reserva' hab.pk %}" class="btn-reservar">
+            📅 Reservar ahora
+          </a>
+          {% else %}
+          <button class="btn-reservar disabled" disabled>
+            🚫 No disponible — {{ hab.get_estado_display }}
+          </button>
+          {% endif %}
+
+          <a href="{% url 'toggle_favorito' hab.pk %}" class="btn-fav">
+            ❤️ Guardar en favoritos
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">🛏️</div>
+    <h4>No hay habitaciones registradas</h4>
+    <p>Aún no se han agregado habitaciones. Vuelve pronto.</p>
+    <a href="{% url 'reservar_habitacion' %}" style="color:var(--naranja);font-weight:700;margin-top:12px;display:inline-block;">Ver todas →</a>
+  </div>
+  {% endif %}
+
+</main>
+
+<!-- Modal Galería -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-galeria">
+      <div class="modal-main-img-wrap">
+        <img id="modal-main-img" src="" alt="" style="display:none;">
+        <div id="modal-main-placeholder" class="modal-main-placeholder">🛏️</div>
+      </div>
+      <div class="modal-thumbs" id="modal-thumbs"></div>
+    </div>
+    <div class="modal-info">
+      <div id="modal-titulo"></div>
+      <button class="btn-cerrar" onclick="cerrarModal()">✕ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+<script>
+  {% for message in messages %}
+  Swal.fire({
+    icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+    title: '{{ message }}',
+    confirmButtonText: 'Aceptar',
+    timer: 3000,
+    customClass: {
+      popup: 'swal-pequeño'
+    }
+  });
+  {% endfor %}
+</script>
+{% endif %}
+
+<script>
+  function verFotos(tipo, numero, imgPrincipal, fotosGaleria) {
+    let imagenes = [];
+    if (imgPrincipal && imgPrincipal.trim()) imagenes.push(imgPrincipal.trim());
+    if (Array.isArray(fotosGaleria)) {
+      fotosGaleria.forEach(url => {
+        if (url && !imagenes.includes(url)) imagenes.push(url);
+      });
+    }
+
+    document.getElementById('modal-titulo').textContent = tipo + ' — Hab. ' + numero;
+
+    const mainImg     = document.getElementById('modal-main-img');
+    const placeholder = document.getElementById('modal-main-placeholder');
+    const thumbsDiv   = document.getElementById('modal-thumbs');
+    thumbsDiv.innerHTML = '';
+
+    if (imagenes.length > 0) {
+      mainImg.src = imagenes[0];
+      mainImg.style.display = 'block';
+      placeholder.style.display = 'none';
+
+      if (imagenes.length > 1) {
+        thumbsDiv.style.display = 'flex';
+        imagenes.forEach((url, i) => {
+          const thumb = document.createElement('img');
+          thumb.src = url;
+          thumb.className = 'modal-thumb' + (i === 0 ? ' active' : '');
+          thumb.onclick = () => {
+            mainImg.src = url;
+            document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+          };
+          thumb.onerror = () => thumb.style.display = 'none';
+          thumbsDiv.appendChild(thumb);
+        });
+      } else {
+        thumbsDiv.style.display = 'none';
+      }
+    } else {
+      mainImg.style.display = 'none';
+      placeholder.style.display = 'flex';
+      thumbsDiv.style.display = 'none';
+    }
+
+    const overlay = document.getElementById('modal-overlay');
+    overlay.style.display = 'flex';
+    overlay.scrollTop = 0;
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') cerrarModal();
+  });
+</script>
+</body>
+</html>

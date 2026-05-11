@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagos — Hotel Casa Marco</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --naranja: #E8920A; --azul-dark: #0D1B2A; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 240px; background: var(--azul-dark); display: flex;
+      flex-direction: column; padding: 24px 0; position: fixed;
+      top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 1.05rem; font-weight: 900; color: white; }
+    .sidebar-logo span { color: var(--naranja); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px; padding: 12px 24px;
+      color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: rgba(255,255,255,0.08); color: white; border-left-color: var(--naranja);
+    }
+    .sidebar-nav .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .sidebar-logout { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .sidebar-logout a { display: flex; align-items: center; gap: 12px; color: #f87171; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+    .main { margin-left: 240px; padding: 36px 40px; flex: 1; }
+    .page-title { font-size: 1.7rem; font-weight: 800; color: var(--azul-dark); margin-bottom: 4px; }
+    .page-sub { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: white; border-radius: 14px; padding: 22px 20px;
+      border: 1px solid #eee; display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .stat-icon { font-size: 1.6rem; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .stat-icon.green { background: #e8f5e9; }
+    .stat-icon.orange { background: #fff3e0; }
+    .stat-icon.red { background: #fce4ec; }
+    .stat-value { font-size: 1.6rem; font-weight: 900; color: var(--azul-dark); line-height: 1; }
+    .stat-label { font-size: 0.78rem; color: #999; margin-top: 3px; }
+
+    .tabla-card {
+      background: white; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #eee;
+    }
+    .tabla-head {
+      padding: 18px 24px; border-bottom: 1px solid #eee;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .tabla-head h3 { font-size: 1rem; font-weight: 700; color: var(--azul-dark); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f8f9fa; }
+    thead th {
+      padding: 12px 16px; text-align: left; font-size: 0.78rem;
+      font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    tbody tr { border-bottom: 1px solid #f5f5f5; transition: background 0.15s; }
+    tbody tr:hover { background: #fafafa; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 14px 16px; font-size: 0.88rem; color: var(--azul-dark); }
+
+    .badge-estado {
+      display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+    }
+    .badge-confirmado  { background: #d4edda; color: #155724; }
+    .badge-pendiente   { background: #fff3cd; color: #856404; }
+    .badge-rechazado   { background: #f8d7da; color: #721c24; }
+    .badge-reembolsado { background: #cce5ff; color: #004085; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #bbb; }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🏨 Casa <span>Marco</span><br><small style="font-size:0.7rem;opacity:0.6;font-weight:400;">Panel Administrador</small></div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'home_admin' %}"><span class="icon">🏠</span> Dashboard</a>
+    <a href="{% url 'admin_habitaciones' %}"><span class="icon">🛏️</span> Habitaciones</a>
+    <a href="{% url 'admin_reservas' %}"><span class="icon">📅</span> Reservas</a>
+    <a href="{% url 'admin_clientes' %}"><span class="icon">👥</span> Clientes</a>
+    <a href="{% url 'admin_pagos' %}" class="active"><span class="icon">💳</span> Pagos</a>
+    <a href="{% url 'admin_servicios' %}"><span class="icon">🔧</span> Servicios</a>
+    <a href="{% url 'admin_reportes' %}"><span class="icon">📊</span> Reportes</a>
+    <a href="{% url 'perfil_usuario' %}"><span class="icon">👤</span> Mi Perfil</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a href="{% url 'logout' %}"><span class="icon">🚪</span> Cerrar sesión</a>
+  </div>
+</aside>
+
+<main class="main">
+  <h1 class="page-title">💳 Pagos</h1>
+  <p class="page-sub">Historial de todos los pagos realizados.</p>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon green">✅</div>
+      <div>
+        <div class="stat-value">{{ pagos|length }}</div>
+        <div class="stat-label">Total pagos</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">⏳</div>
+      <div>
+        <div class="stat-value">{% with pagos|length as total %}{{ pagos|length }}{% endwith %}</div>
+        <div class="stat-label">Pagos registrados</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">💰</div>
+      <div>
+        <div class="stat-value">${{ total_ingresos|floatformat:0 }}</div>
+        <div class="stat-label">Total ingresos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabla-card">
+    <div class="tabla-head">
+      <h3>Todos los pagos</h3>
+    </div>
+
+    {% if pagos %}
+    <table>
+      <thead>
+        <tr>
+          <th>Referencia</th>
+          <th>Cliente</th>
+          <th>Reserva</th>
+          <th>Método</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pago in pagos %}
+        <tr>
+          <td><strong>{{ pago.referencia }}</strong></td>
+          <td>{{ pago.usuario.username }}</td>
+          <td>{{ pago.reserva.codigo }}</td>
+          <td>{{ pago.get_metodo_display }}</td>
+          <td><strong>${{ pago.total|floatformat:0 }}</strong></td>
+          <td><span class="badge-estado badge-{{ pago.estado }}">{{ pago.get_estado_display }}</span></td>
+          <td>{{ pago.fecha_pago|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="icon">💳</div>
+      <p>No hay pagos registrados aún.</p>
+    </div>
+    {% endif %}
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+<script>
+  {% for message in messages %}
+  Swal.fire({
+    icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+    title: '{{ message }}',
+    confirmButtonText: 'Aceptar',
+    timer: 3000,
+    customClass: {
+      popup: 'swal-pequeño'
+    }
+  });
+  {% endfor %}
+</script>
+{% endif %}
+</body>
+</html>
