@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial Estadías — Hotel Casa Marco</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --naranja: #E8920A; --azul-dark: #0D1B2A; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 230px; background: white; border-right: 1px solid #eee;
+      display: flex; flex-direction: column; padding: 24px 0;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #eee; font-size: 1.1rem; font-weight: 900; color: var(--azul-dark); }
+    .sidebar-logo span { color: var(--naranja); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px; padding: 12px 24px;
+      color: #555; text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: #fff8ee; color: var(--azul-dark); border-left-color: var(--naranja); font-weight: 700;
+    }
+    .sidebar-nav .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .sidebar-logout { padding: 16px 24px; border-top: 1px solid #eee; }
+    .sidebar-logout a { display: flex; align-items: center; gap: 12px; color: #e53935; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+    .main { margin-left: 230px; padding: 36px 40px; flex: 1; }
+    .page-title { font-size: 1.7rem; font-weight: 800; color: var(--azul-dark); margin-bottom: 4px; }
+    .page-sub { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+
+    .historial-lista { display: flex; flex-direction: column; gap: 16px; }
+
+    .historial-card {
+      background: white; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #eee;
+      display: grid; grid-template-columns: 180px 1fr;
+      transition: box-shadow 0.2s;
+    }
+    .historial-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.11); }
+
+    .historial-img { overflow: hidden; background: #f0f2f5; }
+    .historial-img img { width: 100%; height: 100%; object-fit: cover; }
+    .historial-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 3rem; opacity: 0.3; }
+
+    .historial-body { padding: 20px 24px; }
+
+    .historial-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+    }
+    .historial-codigo { font-size: 1rem; font-weight: 800; color: var(--azul-dark); }
+    .historial-tipo { font-size: 0.82rem; color: #aaa; margin-top: 2px; }
+
+    .badge-estado {
+      display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+    }
+    .badge-completada { background: #cce5ff; color: #004085; }
+    .badge-cancelada  { background: #f8d7da; color: #721c24; }
+
+    .historial-info {
+      display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .historial-info-item { display: flex; flex-direction: column; gap: 2px; }
+    .historial-info-label { font-size: 0.72rem; color: #aaa; font-weight: 600; text-transform: uppercase; }
+    .historial-info-valor { font-size: 0.9rem; font-weight: 700; color: var(--azul-dark); }
+    .historial-total { font-size: 1.3rem; font-weight: 900; color: var(--naranja); }
+
+    .historial-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 12px; border-top: 1px solid #f5f5f5; flex-wrap: wrap; gap: 10px;
+    }
+    .historial-meta { font-size: 0.82rem; color: #aaa; }
+
+    /* Calificación ya hecha */
+    .calificacion-hecha {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: #aaa; font-weight: 600;
+    }
+    .estrellas-display { color: #F5A623; font-size: 0.9rem; }
+
+    /* Botones */
+    .btn-calificar {
+      padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      background: #fff8e1; color: #f59e0b; text-decoration: none; transition: all 0.2s;
+      border: 1px solid #f59e0b;
+    }
+    .btn-calificar:hover { background: #f59e0b; color: white; }
+
+    .empty-state {
+      text-align: center; padding: 80px 20px; background: white;
+      border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
+    .empty-state h4 { color: var(--azul-dark); font-weight: 700; }
+    .empty-state p { color: #aaa; font-size: 0.9rem; margin-top: 8px; }
+    .btn-explorar {
+      display: inline-block; margin-top: 20px; padding: 12px 28px;
+      background: var(--naranja); color: white; border-radius: 10px;
+      font-weight: 700; text-decoration: none;
+    }
+    .btn-explorar:hover { background: #C97D08; color: white; }
+
+    @media (max-width: 768px) {
+      .historial-card { grid-template-columns: 1fr; }
+      .historial-img { height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🏨 Casa <span>Marco</span></div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'home' %}"><span class="icon">🏠</span> Inicio</a>
+    <a href="{% url 'reservar_habitacion' %}"><span class="icon">🛏️</span> Reservar Habitación</a>
+    <a href="{% url 'mis_reservas' %}"><span class="icon">📅</span> Mis Reservas</a>
+    <a href="{% url 'historial_estadias' %}" class="active"><span class="icon">📋</span> Historial Estadías</a>
+    <a href="{% url 'mis_pagos' %}"><span class="icon">💳</span> Mis Pagos</a>
+    <a href="{% url 'favoritos' %}"><span class="icon">❤️</span> Favoritos</a>
+    <a href="{% url 'notificaciones' %}"><span class="icon">🔔</span> Notificaciones</a>
+    <a href="{% url 'perfil_usuario' %}"><span class="icon">👤</span> Mi Perfil</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a href="{% url 'logout' %}"><span class="icon">🚪</span> Cerrar sesión</a>
+  </div>
+</aside>
+
+<main class="main">
+  <h1 class="page-title">📋 Historial de Estadías</h1>
+  <p class="page-sub">Tus estadías completadas y canceladas.</p>
+
+  {% if reservas %}
+  <div class="historial-lista">
+    {% for reserva in reservas %}
+    <div class="historial-card">
+
+      <div class="historial-img">
+        {% if reserva.habitacion.imagen_url %}
+          <img src="{{ reserva.habitacion.imagen_url }}" alt="{{ reserva.habitacion.tipo }}">
+        {% elif reserva.habitacion.imagen %}
+          <img src="{{ reserva.habitacion.imagen.url }}" alt="{{ reserva.habitacion.tipo }}">
+        {% else %}
+          <div class="historial-img-placeholder">🛏️</div>
+        {% endif %}
+      </div>
+
+      <div class="historial-body">
+        <div class="historial-header">
+          <div>
+            <div class="historial-codigo">{{ reserva.codigo }}</div>
+            <div class="historial-tipo">{{ reserva.habitacion.get_tipo_display }} — Hab. {{ reserva.habitacion.numero }}</div>
+          </div>
+          <span class="badge-estado badge-{{ reserva.estado }}">{{ reserva.get_estado_display }}</span>
+        </div>
+
+        <div class="historial-info">
+          <div class="historial-info-item">
+            <span class="historial-info-label">Check-in</span>
+            <span class="historial-info-valor">{{ reserva.check_in|date:"d/m/Y" }}</span>
+          </div>
+          <div class="historial-info-item">
+            <span class="historial-info-label">Check-out</span>
+            <span class="historial-info-valor">{{ reserva.check_out|date:"d/m/Y" }}</span>
+          </div>
+          <div class="historial-info-item">
+            <span class="historial-info-label">Noches</span>
+            <span class="historial-info-valor">{{ reserva.noches }}</span>
+          </div>
+          <div class="historial-info-item">
+            <span class="historial-info-label">Huéspedes</span>
+            <span class="historial-info-valor">{{ reserva.huespedes }}</span>
+          </div>
+          <div class="historial-info-item">
+            <span class="historial-info-label">Total pagado</span>
+            <span class="historial-total">${{ reserva.total|floatformat:0 }}</span>
+          </div>
+        </div>
+
+        <div class="historial-footer">
+          <div class="historial-meta">
+            📅 Reservado el {{ reserva.fecha_reserva|date:"d/m/Y" }}
+            &nbsp;·&nbsp; 👤 {{ reserva.nombre_huesped }}
+          </div>
+
+          {% if reserva.estado == 'completada' %}
+            {% if reserva.calificacion %}
+            <div class="calificacion-hecha">
+              <span class="estrellas-display">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= reserva.calificacion.estrellas %}★{% else %}☆{% endif %}
+                {% endfor %}
+              </span>
+              <span>Ya calificaste</span>
+            </div>
+            {% else %}
+            <a href="{% url 'calificar_estadia' reserva.pk %}" class="btn-calificar">
+              ⭐ Calificar estadía
+            </a>
+            {% endif %}
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">📋</div>
+    <h4>No tienes estadías en el historial</h4>
+    <p>Aquí aparecerán tus estadías completadas o canceladas.</p>
+    <a href="{% url 'reservar_habitacion' %}" class="btn-explorar">🛏️ Explorar habitaciones</a>
+  </div>
+  {% endif %}
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+<script>
+  {% for message in messages %}
+  Swal.fire({
+    icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+    title: '{{ message }}',
+    confirmButtonText: 'Aceptar',
+    timer: 3000,
+    customClass: {
+      popup: 'swal-pequeño'
+    }
+  });
+  {% endfor %}
+</script>
+{% endif %}
+</body>
+</html>
