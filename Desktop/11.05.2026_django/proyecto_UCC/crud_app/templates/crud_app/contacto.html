@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto — Hotel Casa Marco</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --naranja: #E8920A; --azul-dark: #0D1B2A; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 230px; background: white; border-right: 1px solid #eee;
+      display: flex; flex-direction: column; padding: 24px 0;
+      position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-logo { padding: 0 24px 24px; border-bottom: 1px solid #eee; font-size: 1.1rem; font-weight: 900; color: var(--azul-dark); }
+    .sidebar-logo span { color: var(--naranja); }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px; padding: 12px 24px;
+      color: #555; text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      background: #fff8ee; color: var(--azul-dark); border-left-color: var(--naranja); font-weight: 700;
+    }
+    .sidebar-nav .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .sidebar-logout { padding: 16px 24px; border-top: 1px solid #eee; }
+    .sidebar-logout a { display: flex; align-items: center; gap: 12px; color: #e53935; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
+
+    .main { margin-left: 230px; padding: 36px 40px; flex: 1; }
+    .page-title { font-size: 1.7rem; font-weight: 800; color: var(--azul-dark); margin-bottom: 4px; }
+    .page-sub { color: #888; font-size: 0.9rem; margin-bottom: 28px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+
+    /* Formulario */
+    .form-card {
+      background: white; border-radius: 14px; padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #eee;
+    }
+    .form-card-title {
+      font-size: 1rem; font-weight: 800; color: var(--azul-dark);
+      margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--azul-dark); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid #e5e7eb;
+      border-radius: 10px; font-size: 0.92rem; color: var(--azul-dark);
+      outline: none; transition: border-color 0.2s; font-family: 'Segoe UI', sans-serif;
+    }
+    .form-input:focus { border-color: var(--naranja); box-shadow: 0 0 0 3px rgba(232,146,10,0.1); }
+
+    .btn-enviar {
+      width: 100%; padding: 14px; background: var(--naranja); color: white;
+      border: none; border-radius: 10px; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: background 0.2s; margin-top: 8px;
+    }
+    .btn-enviar:hover { background: #C97D08; }
+
+    /* Info lateral */
+    .info-col { display: flex; flex-direction: column; gap: 16px; }
+
+    .info-card {
+      background: white; border-radius: 14px; padding: 22px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 1px solid #eee;
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .info-icon {
+      width: 46px; height: 46px; background: #fff8ee;
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.3rem; flex-shrink: 0;
+    }
+    .info-title { font-size: 0.88rem; font-weight: 700; color: var(--azul-dark); margin-bottom: 4px; }
+    .info-value { font-size: 0.85rem; color: #666; line-height: 1.5; }
+
+    /* FAQ card */
+    .faq-card {
+      background: linear-gradient(135deg, var(--azul-dark), #1a3a5c);
+      border-radius: 14px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1); color: white;
+    }
+    .faq-card h4 { font-size: 1rem; font-weight: 800; margin-bottom: 16px; }
+    .faq-item {
+      margin-bottom: 14px; padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .faq-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .faq-pregunta { font-size: 0.82rem; font-weight: 700; color: var(--naranja); margin-bottom: 4px; }
+    .faq-respuesta { font-size: 0.78rem; color: rgba(255,255,255,0.75); line-height: 1.5; }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🏨 Casa <span>Marco</span></div>
+  <nav class="sidebar-nav">
+    <a href="{% url 'home' %}"><span class="icon">🏠</span> Inicio</a>
+    <a href="{% url 'reservar_habitacion' %}"><span class="icon">🛏️</span> Reservar Habitación</a>
+    <a href="{% url 'mis_reservas' %}"><span class="icon">📅</span> Mis Reservas</a>
+    <a href="{% url 'historial_estadias' %}"><span class="icon">📋</span> Historial Estadías</a>
+    <a href="{% url 'mis_pagos' %}"><span class="icon">💳</span> Mis Pagos</a>
+    <a href="{% url 'favoritos' %}"><span class="icon">❤️</span> Favoritos</a>
+    <a href="{% url 'notificaciones' %}"><span class="icon">🔔</span> Notificaciones</a>
+    <a href="{% url 'perfil_usuario' %}"><span class="icon">👤</span> Mi Perfil</a>
+    <a href="{% url 'contacto' %}" class="active"><span class="icon">💬</span> Contacto</a>
+  </nav>
+  <div class="sidebar-logout">
+    <a href="{% url 'logout' %}"><span class="icon">🚪</span> Cerrar sesión</a>
+  </div>
+</aside>
+
+<main class="main">
+  <h1 class="page-title">💬 Contacto</h1>
+  <p class="page-sub">¿Tienes alguna duda? Escríbenos y te responderemos pronto.</p>
+
+  <div class="grid">
+
+    <!-- Formulario -->
+    <div class="form-card">
+      <div class="form-card-title">📝 Envíanos un mensaje</div>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-input"
+                   placeholder="Tu nombre" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Correo</label>
+            <input type="email" name="correo" class="form-input"
+                   placeholder="Tu correo" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asunto</label>
+          <select name="asunto" class="form-input" required>
+            <option value="">-- Selecciona un asunto --</option>
+            <option value="Consulta sobre una reserva">🛏️ Consulta sobre una reserva</option>
+            <option value="Problema con mi pago">💳 Problema con mi pago</option>
+            <option value="Solicitud de servicio">🔧 Solicitud de servicio</option>
+            <option value="Información de habitaciones">🏨 Información de habitaciones</option>
+            <option value="Cancelación">❌ Cancelación</option>
+            <option value="Sugerencia">💡 Sugerencia</option>
+            <option value="Otro">📌 Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mensaje</label>
+          <textarea name="mensaje" class="form-input" rows="5"
+                    placeholder="Escribe tu mensaje aquí..." required></textarea>
+        </div>
+        <button type="submit" class="btn-enviar">📨 Enviar Mensaje</button>
+      </form>
+    </div>
+
+    <!-- Info lateral -->
+    <div class="info-col">
+
+      <div class="info-card">
+        <div class="info-icon">📧</div>
+        <div>
+          <div class="info-title">Correo electrónico</div>
+          <div class="info-value">reservas@hotelcasamarco.com<br>Respuesta en menos de 24h</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">📞</div>
+        <div>
+          <div class="info-title">Teléfono</div>
+          <div class="info-value">+57 312 456 7890<br>Lunes a Viernes 8am — 6pm</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">📍</div>
+        <div>
+          <div class="info-title">Dirección</div>
+          <div class="info-value">Calle Principal #15-42<br>Ciénaga de Oro, Córdoba</div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon">⏰</div>
+        <div>
+          <div class="info-title">Horario de atención</div>
+          <div class="info-value">Lunes a Viernes<br>8:00 AM — 6:00 PM</div>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="faq-card">
+        <h4>❓ Preguntas frecuentes</h4>
+        <div class="faq-item">
+          <div class="faq-pregunta">¿Cómo cancelo mi reserva?</div>
+          <div class="faq-respuesta">Ve a Mis Reservas y presiona el botón Cancelar en la reserva correspondiente.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-pregunta">¿Cuándo debo hacer el check-in?</div>
+          <div class="faq-respuesta">El check-in es a partir de las 3:00 PM del día de llegada.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-pregunta">¿Cómo solicito un servicio?</div>
+          <div class="faq-respuesta">Ve a Mis Reservas y presiona Solicitar Servicio en tu reserva activa.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-pregunta">¿El pago es seguro?</div>
+          <div class="faq-respuesta">Sí, todos los pagos están protegidos con cifrado de grado bancario.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% if messages %}
+<script>
+  {% for message in messages %}
+  Swal.fire({
+    icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+    title: '{{ message }}',
+    confirmButtonText: 'Aceptar',
+    timer: 3000,
+    customClass: {
+      popup: 'swal-pequeño'
+    }
+  });
+  {% endfor %}
+</script>
+{% endif %}
+</body>
+</html>
