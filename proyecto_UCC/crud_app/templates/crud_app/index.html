@@ -1,0 +1,1120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hotel Casa Marco</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --naranja: #E8920A;
+      --naranja-dark: #C97D08;
+      --azul-dark: #0D1B2A;
+      --azul-mid: #1a2a3a;
+      --texto: #1a1a2e;
+      --gris: #6b7280;
+    }
+
+    body { font-family: 'Segoe UI', sans-serif; color: var(--texto); }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 60px;
+      background: rgba(13, 27, 42, 0.85);
+      backdrop-filter: blur(10px);
+      transition: background 0.3s;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 42px; height: 42px;
+      background: var(--naranja);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; color: white; font-weight: 900;
+    }
+
+    .nav-logo-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--naranja); }
+
+    .btn-login {
+      padding: 10px 28px;
+      background: var(--naranja);
+      color: white;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-login:hover { background: var(--naranja-dark); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh;
+      background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)),
+        url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .hero-content { max-width: 800px; }
+
+    .hero-eyebrow {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--naranja);
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero-title span { color: var(--naranja); }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 16px 36px;
+      background: var(--naranja);
+      color: white;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover { background: var(--naranja-dark); transform: translateY(-2px); color: white; }
+
+    .btn-secondary {
+      padding: 16px 36px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.25); color: white; }
+
+    /* ── SECCIONES ── */
+    section { padding: 100px 60px; }
+
+    .section-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--naranja);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      color: var(--azul-dark);
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    .section-title span { color: var(--naranja); }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--gris);
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto 60px;
+    }
+
+    /* ── MISIÓN ── */
+    .mision-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .mision-text p {
+      font-size: 1rem;
+      color: var(--gris);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .mision-img {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    .mision-img img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+    }
+
+    /* ── PLATAFORMA ── */
+    .plataforma {
+      background: var(--azul-dark);
+      text-align: center;
+    }
+
+    .plataforma .section-title { color: white; }
+
+    .plataforma-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px;
+      max-width: 1100px;
+      margin: 60px auto 0;
+    }
+
+    .plataforma-item { text-align: center; }
+
+    .plataforma-num {
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--naranja);
+      opacity: 0.6;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .plataforma-titulo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .plataforma-desc {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+
+    /* ── HABITACIONES ── */
+    .habitaciones { background: #fafafa; text-align: center; }
+
+    .habitaciones-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .hab-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: left;
+    }
+
+    .hab-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+
+    .hab-img {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    .hab-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .hab-card:hover .hab-img img { transform: scale(1.05); }
+
+    .hab-precio {
+      position: absolute;
+      top: 16px; left: 16px;
+      background: var(--naranja);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .hab-body { padding: 20px; }
+
+    .hab-nombre {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--azul-dark);
+      margin-bottom: 8px;
+    }
+
+    .hab-desc {
+      font-size: 0.82rem;
+      color: var(--gris);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .hab-amenidades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .amenidad {
+      font-size: 0.72rem;
+      color: var(--gris);
+      background: #f5f5f5;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .btn-detalle {
+      display: block;
+      text-align: center;
+      padding: 10px;
+      background: var(--azul-dark);
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .btn-detalle:hover { background: var(--naranja); color: white; }
+
+    /* ── SERVICIOS ── */
+    .servicios { text-align: center; }
+
+    .servicios-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .servicio-card {
+      padding: 40px 32px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      text-align: left;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .servicio-card:hover {
+      border-color: var(--naranja);
+      box-shadow: 0 8px 30px rgba(232,146,10,0.1);
+      background: #fffbf5;
+    }
+
+    .servicio-icon {
+      width: 56px; height: 56px;
+      background: var(--naranja);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: white;
+      margin-bottom: 20px;
+    }
+
+    .servicio-titulo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--azul-dark);
+      margin-bottom: 10px;
+    }
+
+    .servicio-desc {
+      font-size: 0.88rem;
+      color: var(--gris);
+      line-height: 1.6;
+    }
+
+    /* ── TESTIMONIOS ── */
+    .testimonio-card {
+      background: #fafafa;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: left;
+      border: 1px solid #eee;
+      transition: all 0.2s;
+    }
+    .testimonio-card:hover {
+      box-shadow: 0 8px 30px rgba(232,146,10,0.12);
+      border-color: var(--naranja);
+      transform: translateY(-4px);
+    }
+    .testimonio-card.featured {
+      background: var(--azul-dark);
+      border-color: var(--azul-dark);
+    }
+    .testimonio-estrellas { color: #F5A623; font-size: 1.1rem; margin-bottom: 16px; }
+    .testimonio-texto {
+      font-size: 0.92rem; color: #555; line-height: 1.7; margin-bottom: 20px;
+    }
+    .testimonio-card.featured .testimonio-texto { color: rgba(255,255,255,0.8); }
+    .testimonio-avatar {
+      width: 46px; height: 46px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 900; color: white;
+    }
+    .testimonio-nombre { font-weight: 700; font-size: 0.9rem; color: var(--azul-dark); }
+    .testimonio-card.featured .testimonio-nombre { color: white; }
+    .testimonio-ciudad { font-size: 0.78rem; color: #aaa; }
+    .testimonio-card.featured .testimonio-ciudad { color: rgba(255,255,255,0.5); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--azul-dark);
+      color: white;
+      padding: 80px 60px 40px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+      gap: 48px;
+      max-width: 1200px;
+      margin: 0 auto 60px;
+    }
+
+    .footer-brand p {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+      margin: 16px 0 24px;
+    }
+
+    .footer-socials { display: flex; gap: 12px; }
+
+    .social-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .social-btn:hover {
+      background: var(--naranja);
+      border-color: var(--naranja);
+      color: white;
+    }
+
+    .footer-col h5 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--naranja); }
+
+    .footer-contacto-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .footer-contacto-item i {
+      color: var(--naranja);
+      margin-top: 2px;
+      width: 16px;
+    }
+
+    .newsletter-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      color: white;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .newsletter-input::placeholder { color: rgba(255,255,255,0.4); }
+    .newsletter-input:focus { border-color: var(--naranja); }
+
+    .btn-newsletter {
+      width: 100%;
+      padding: 12px;
+      background: var(--naranja);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .btn-newsletter:hover { background: var(--naranja-dark); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 32px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.4);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .habitaciones-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .testimonios-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    @media (max-width: 768px) {
+       contacto > div > div { grid-template-columns: 1fr !important; gap: 40px !important; }
+      nav { padding: 16px 24px; }
+      section { padding: 60px 24px; }
+      .nav-links { display: none; }
+      .mision-section { grid-template-columns: 1fr; gap: 40px; }
+      .plataforma-grid { grid-template-columns: 1fr; gap: 32px; }
+      .habitaciones-grid { grid-template-columns: 1fr; }
+      .servicios-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .testimonios-grid { grid-template-columns: 1fr !important; }
+      .stats-testimonios { grid-template-columns: repeat(2,1fr) !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#inicio" class="nav-logo">
+      <img src="{% static 'crud_app/imagenes/logo.jpeg' %}" alt="Logo Hotel Casa Marco"
+           style="width:80px; height:52px; border-radius:10px; object-fit:cover;">
+      <span class="nav-logo-text">Casa Marco</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#inicio">INICIO</a></li>
+      <li><a href="#habitaciones">HABITACIONES</a></li>
+      <li><a href="#servicios">SERVICIOS</a></li>
+      <li><a href="#testimonios">OPINIONES</a></li>
+      <li><a href="#contacto">CONTACTO</a></li>
+    </ul>
+    <a href="{% url 'login' %}" class="btn-login">Login</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <div class="hero-eyebrow">BIENVENIDO A</div>
+      <h1 class="hero-title">Hotel <span>Casa Marco</span></h1>
+      <p class="hero-subtitle">
+        Donde el lujo se encuentra con la comodidad. Una experiencia única
+        diseñada para transformar cada momento de tu estadía en un recuerdo
+        inolvidable.
+      </p>
+      <div class="hero-btns">
+        <a href="#habitaciones" class="btn-primary">Explorar Habitaciones</a>
+        <a href="#contacto" class="btn-secondary">Contactar Ahora</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISIÓN -->
+  <section style="padding: 100px 60px;">
+    <div class="mision-section">
+      <div class="mision-text">
+        <div class="section-eyebrow">NUESTRA MISIÓN</div>
+        <h2 class="section-title">Crear Experiencias<br><span>Inolvidables</span></h2>
+        <p>
+          En Hotel Casa Marco, nuestra misión es superar las expectativas de
+          cada huésped, ofreciendo un servicio excepcional, instalaciones de
+          primera calidad y una atención al detalle que transforma cada
+          estadía en una experiencia única e inolvidable en el corazón de
+          Ciénaga de Oro.
+        </p>
+        <p>
+          Nos comprometemos con la excelencia, la innovación y el cuidado
+          genuino de nuestros visitantes, creando un ambiente donde el lujo y
+          la calidez se fusionan perfectamente.
+        </p>
+      </div>
+      <div class="mision-img">
+        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80"
+             alt="Lobby Hotel Casa Marco">
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATAFORMA -->
+  <section class="plataforma">
+    <div class="section-eyebrow" style="color:var(--naranja);">PLATAFORMA</div>
+    <h2 class="section-title" style="color:white;">Sistema de Reservas Casa Marco</h2>
+    <div class="plataforma-grid">
+      <div class="plataforma-item">
+        <div class="plataforma-num">01</div>
+        <div class="plataforma-titulo">Reserva Online</div>
+        <div class="plataforma-desc">Plataforma intuitiva para buscar, comparar y reservar habitaciones en tiempo real con confirmación inmediata.</div>
+      </div>
+      <div class="plataforma-item">
+        <div class="plataforma-num">02</div>
+        <div class="plataforma-titulo">Gestión de Estadía</div>
+        <div class="plataforma-desc">Acceso a servicios adicionales, solicitudes especiales, facturación digital y control total de tu reserva.</div>
+      </div>
+      <div class="plataforma-item">
+        <div class="plataforma-num">03</div>
+        <div class="plataforma-titulo">Experiencia Personalizada</div>
+        <div class="plataforma-desc">Recomendaciones basadas en tus preferencias, membresía de fidelización y beneficios exclusivos.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HABITACIONES -->
+  <section class="habitaciones" id="habitaciones">
+    <div class="section-eyebrow">ALOJAMIENTO</div>
+    <h2 class="section-title">Nuestras Habitaciones</h2>
+    <p class="section-subtitle">Cada espacio ha sido cuidadosamente diseñado para ofrecerte el máximo confort y una experiencia de descanso excepcional.</p>
+    <div class="habitaciones-grid">
+      <div class="hab-card">
+        <div class="hab-img">
+          <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" alt="Suite Ejecutiva">
+          <span class="hab-precio">$420.000 COP/noche</span>
+        </div>
+        <div class="hab-body">
+          <div class="hab-nombre">Suite Ejecutiva</div>
+          <div class="hab-desc">Espacio refinado con vistas panorámicas, ideal para viajes de negocios.</div>
+          <div class="hab-amenidades">
+            <span class="amenidad">Cama King</span>
+            <span class="amenidad">Escritorio</span>
+            <span class="amenidad">Vista Ciudad</span>
+          </div>
+          <a href="{% url 'login' %}" class="btn-detalle">Ver Detalle</a>
+        </div>
+      </div>
+      <div class="hab-card">
+        <div class="hab-img">
+          <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80" alt="Suite Presidencial">
+          <span class="hab-precio">$850.000 COP/noche</span>
+        </div>
+        <div class="hab-body">
+          <div class="hab-nombre">Suite Presidencial</div>
+          <div class="hab-desc">El máximo lujo con sala privada, jacuzzi y servicio de mayordomo.</div>
+          <div class="hab-amenidades">
+            <span class="amenidad">Jacuzzi</span>
+            <span class="amenidad">Sala Privada</span>
+            <span class="amenidad">Mayordomo</span>
+          </div>
+          <a href="{% url 'login' %}" class="btn-detalle">Ver Detalle</a>
+        </div>
+      </div>
+      <div class="hab-card">
+        <div class="hab-img">
+          <img src="https://images.unsplash.com/photo-1591088398332-8a7791972843?w=600&q=80" alt="Habitacion Deluxe">
+          <span class="hab-precio">$320.000 COP/noche</span>
+        </div>
+        <div class="hab-body">
+          <div class="hab-nombre">Habitación Deluxe</div>
+          <div class="hab-desc">Confort superior con balcón privado y amenities premium incluidos.</div>
+          <div class="hab-amenidades">
+            <span class="amenidad">Balcón</span>
+            <span class="amenidad">Amenities</span>
+            <span class="amenidad">Desayuno</span>
+          </div>
+          <a href="{% url 'login' %}" class="btn-detalle">Ver Detalle</a>
+        </div>
+      </div>
+      <div class="hab-card">
+        <div class="hab-img">
+          <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80" alt="Villa Familiar">
+          <span class="hab-precio">$580.000 COP/noche</span>
+        </div>
+        <div class="hab-body">
+          <div class="hab-nombre">Villa Familiar</div>
+          <div class="hab-desc">Espacio amplio para toda la familia con cocina equipada y jardín privado.</div>
+          <div class="hab-amenidades">
+            <span class="amenidad">2 Camas</span>
+            <span class="amenidad">Cocina</span>
+            <span class="amenidad">Jardín</span>
+          </div>
+          <a href="{% url 'login' %}" class="btn-detalle">Ver Detalle</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section class="servicios" id="servicios">
+    <div class="section-eyebrow">SERVICIOS</div>
+    <h2 class="section-title">Todo lo que Necesitas</h2>
+    <p class="section-subtitle">Disfruta de una amplia gama de servicios diseñados para hacer tu estadía perfecta en cada detalle.</p>
+    <div class="servicios-grid">
+      <div class="servicio-card">
+        <div class="servicio-icon"><i class="fas fa-utensils"></i></div>
+        <div class="servicio-titulo">Restaurante Gourmet</div>
+        <div class="servicio-desc">Cocina internacional de autor con ingredientes frescos y locales, dirigida por chefs galardonados.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-icon"><i class="fas fa-heart"></i></div>
+        <div class="servicio-titulo">Spa & Bienestar</div>
+        <div class="servicio-desc">Tratamientos rejuvenecedores, masajes terapéuticos y un ambiente de total relajación.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-icon"><i class="fas fa-wifi"></i></div>
+        <div class="servicio-titulo">WiFi Premium</div>
+        <div class="servicio-desc">Conectividad de alta velocidad en todo el hotel para trabajo y entretenimiento sin interrupciones.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-icon"><i class="fas fa-car"></i></div>
+        <div class="servicio-titulo">Transporte VIP</div>
+        <div class="servicio-desc">Servicio de traslado desde y hacia el aeropuerto con vehículos de lujo y choferes profesionales.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-icon"><i class="fas fa-concierge-bell"></i></div>
+        <div class="servicio-titulo">Concierge 24/7</div>
+        <div class="servicio-desc">Asistencia personalizada las 24 horas para reservas, tours y cualquier necesidad especial.</div>
+      </div>
+      <div class="servicio-card">
+        <div class="servicio-icon"><i class="fas fa-dumbbell"></i></div>
+        <div class="servicio-titulo">Gimnasio Equipado</div>
+        <div class="servicio-desc">Instalaciones modernas con equipos de última generación y entrenadores certificados disponibles.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section style="background: white; padding: 100px 60px;" id="testimonios">
+    <div style="text-align:center; max-width:1200px; margin:0 auto;">
+      <div class="section-eyebrow">TESTIMONIOS</div>
+      <h2 class="section-title">Lo que Dicen<br><span>Nuestros Huéspedes</span></h2>
+      <p class="section-subtitle">La satisfacción de nuestros huéspedes es nuestra mayor recompensa.</p>
+
+      <div class="testimonios-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:20px;">
+
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Una experiencia increíble. Las habitaciones son hermosas, el servicio es de primera y la atención al detalle es impresionante. Sin duda volveré."</p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="testimonio-avatar" style="background:var(--naranja);">M</div>
+            <div>
+              <div class="testimonio-nombre">María González</div>
+              <div class="testimonio-ciudad">Bogotá, Colombia</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonio-card featured">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"El mejor hotel en el que he estado. La piscina es espectacular y el restaurante tiene una gastronomía exquisita. El personal es muy amable."</p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="testimonio-avatar" style="background:var(--naranja);">C</div>
+            <div>
+              <div class="testimonio-nombre">Carlos Martínez</div>
+              <div class="testimonio-ciudad">Medellín, Colombia</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Vine con mi familia y quedamos encantados. Las instalaciones son modernas, limpias y muy cómodas. La atención fue excepcional desde el primer momento."</p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="testimonio-avatar" style="background:var(--naranja);">A</div>
+            <div>
+              <div class="testimonio-nombre">Ana Rodríguez</div>
+              <div class="testimonio-ciudad">Barranquilla, Colombia</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★☆</div>
+          <p class="testimonio-texto">"Excelente ubicación y un ambiente muy tranquilo. El spa es increíble y el desayuno buffet tiene una variedad impresionante. Muy recomendado."</p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="testimonio-avatar" style="background:#1a3a5c;">J</div>
+            <div>
+              <div class="testimonio-nombre">Jorge Herrera</div>
+              <div class="testimonio-ciudad">Cartagena, Colombia</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Hotel de lujo con precios accesibles. La suite que reservé superó todas mis expectativas. El personal siempre atento y dispuesto a ayudar."</p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="testimonio-avatar" style="background:var(--naranja);">L</div>
+            <div>
+              <div class="testimonio-nombre">Laura Pérez</div>
+              <div class="testimonio-ciudad">Cali, Colombia</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonio-card">
+          <div class="testimonio-estrellas">★★★★★</div>
+          <p class="testimonio-texto">"Vine por trabajo y me quedé enamorado del lugar. La habitación ejecutiva tiene todo lo necesario. La conexión WiFi es excelente. Volveré pronto."</p>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="testimonio-avatar" style="background:#1a3a5c;">R</div>
+            <div>
+              <div class="testimonio-nombre">Roberto Silva</div>
+              <div class="testimonio-ciudad">Bucaramanga, Colombia</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Estadísticas -->
+      <div class="stats-testimonios" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+           margin-top:60px; background:var(--azul-dark); border-radius:20px; overflow:hidden;">
+        <div style="padding:40px; text-align:center;">
+          <div style="font-size:2.5rem; font-weight:900; color:var(--naranja);">4.9</div>
+          <div style="color:#F5A623; font-size:1rem; margin:6px 0;">★★★★★</div>
+          <div style="font-size:0.85rem; color:rgba(255,255,255,0.6);">Calificación promedio</div>
+        </div>
+        <div style="padding:40px; text-align:center; border-left:1px solid rgba(255,255,255,0.1);">
+          <div style="font-size:2.5rem; font-weight:900; color:var(--naranja);">500+</div>
+          <div style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-top:10px;">Huéspedes satisfechos</div>
+        </div>
+        <div style="padding:40px; text-align:center; border-left:1px solid rgba(255,255,255,0.1);">
+          <div style="font-size:2.5rem; font-weight:900; color:var(--naranja);">98%</div>
+          <div style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-top:10px;">Tasa de satisfacción</div>
+        </div>
+        <div style="padding:40px; text-align:center; border-left:1px solid rgba(255,255,255,0.1);">
+          <div style="font-size:2.5rem; font-weight:900; color:var(--naranja);">5+</div>
+          <div style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-top:10px;">Años de experiencia</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+ 
+  <!-- UBICACIÓN -->
+<section style="background: #0a1628; padding: 100px 60px;" id="contacto">
+  <div style="max-width:1200px; margin:0 auto;">
+
+    <div style="display:grid; grid-template-columns:1fr 1.6fr; gap:80px; align-items:center;">
+
+      <!-- Info izquierda -->
+      <div>
+        <div class="section-eyebrow" style="color:#4ade80;">ENCUÉNTRANOS</div>
+        <h2 style="font-size:clamp(2rem,4vw,3.2rem); font-weight:900; color:white;
+                   line-height:1.15; margin-bottom:20px;">
+          Nuestra Sede
+        </h2>
+        <p style="color:rgba(255,255,255,0.5); font-size:1rem; margin-bottom:48px;">
+          En la perla del Sinú.
+        </p>
+
+        <!-- Dirección -->
+        <div style="display:flex; align-items:flex-start; gap:18px; margin-bottom:28px;">
+          <div style="width:52px; height:52px; background:#1a3a2a; border-radius:14px;
+                      display:flex; align-items:center; justify-content:center;
+                      flex-shrink:0;">
+            <i class="fas fa-map-marker-alt" style="color:#4ade80; font-size:1.1rem;"></i>
+          </div>
+          <div>
+            <div style="font-weight:700; color:white; font-size:1rem; margin-bottom:6px;">Dirección</div>
+            <div style="color:rgba(255,255,255,0.6); font-size:0.9rem; line-height:1.6;">
+              Calle Principal #15-42<br>Ciénaga de Oro, Córdoba, Colombia
+            </div>
+          </div>
+        </div>
+
+        <!-- Teléfono -->
+        <div style="display:flex; align-items:flex-start; gap:18px; margin-bottom:28px;">
+          <div style="width:52px; height:52px; background:#1a3a2a; border-radius:14px;
+                      display:flex; align-items:center; justify-content:center;
+                      flex-shrink:0;">
+            <i class="fas fa-phone" style="color:#4ade80; font-size:1.1rem;"></i>
+          </div>
+          <div>
+            <div style="font-weight:700; color:white; font-size:1rem; margin-bottom:6px;">Teléfono</div>
+            <div style="color:rgba(255,255,255,0.6); font-size:0.9rem; line-height:1.8;">
+              +57 312 456 7890<br>+57 300 123 4567
+            </div>
+          </div>
+        </div>
+
+        <!-- Correo -->
+        <div style="display:flex; align-items:flex-start; gap:18px; margin-bottom:48px;">
+          <div style="width:52px; height:52px; background:#1a3a2a; border-radius:14px;
+                      display:flex; align-items:center; justify-content:center;
+                      flex-shrink:0;">
+            <i class="fas fa-envelope" style="color:#4ade80; font-size:1.1rem;"></i>
+          </div>
+          <div>
+            <div style="font-weight:700; color:white; font-size:1rem; margin-bottom:6px;">Correo</div>
+            <div style="color:#4ade80; font-size:0.9rem;">
+              reservas@hotelcasamarco.com
+            </div>
+          </div>
+        </div>
+
+        <a href="{% url 'login' %}" style="display:inline-flex; align-items:center; gap:10px;
+           padding:14px 32px; background:var(--naranja); color:white;
+           border-radius:50px; font-weight:700; font-size:0.95rem;
+           text-decoration:none; transition: background 0.2s;"
+           onmouseover="this.style.background='#C97D08'"
+           onmouseout="this.style.background='var(--naranja)'">
+          🛏️ Hacer una Reserva
+        </a>
+      </div>
+
+      <!-- Mapa derecha -->
+      <div style="border-radius:20px; overflow:hidden;
+                  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+                  border:2px solid rgba(255,255,255,0.08);">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.5!2d-75.8826!3d8.7578!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e5a8e5a8e5a8e5a%3A0x1234567890abcdef!2sCi%C3%A9naga%20de%20Oro%2C%20C%C3%B3rdoba!5e0!3m2!1ses!2sco!4v1234567890"
+          width="100%"
+          height="480"
+          style="border:0; display:block;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+  <img src="{% static 'crud_app/imagenes/logo.jpeg' %}" alt="Logo Hotel Casa Marco"
+       style="width:55px; height:55px; border-radius:10px; object-fit:cover;">
+  <span style="font-size:1.2rem;font-weight:700;">Casa Marco</span>
+</div>
+        <p>Donde la tradición cordobesa y el confort moderno se encuentran para brindarte una estadía inolvidable en el corazón del Caribe colombiano.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navegación</h5>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#habitaciones">Habitaciones</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#testimonios">Opiniones</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contacto</h5>
+        <div class="footer-contacto-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Calle Principal #15-42<br>Ciénaga de Oro, Córdoba, Colombia</span>
+        </div>
+        <div class="footer-contacto-item">
+          <i class="fas fa-phone"></i>
+          <span>+57 312 456 7890</span>
+        </div>
+        <div class="footer-contacto-item">
+          <i class="fas fa-envelope"></i>
+          <span>reservas@hotelcasamarco.com</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Newsletter</h5>
+        <p style="font-size:0.88rem;color:rgba(255,255,255,0.6);margin-bottom:16px;">
+          Suscríbete para recibir ofertas exclusivas y novedades.
+        </p>
+        <input type="email" class="newsletter-input" placeholder="Tu correo electrónico">
+        <button class="btn-newsletter">Suscribirse</button>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Hotel Casa Marco. Todos los derechos reservados. — Ciénaga de Oro, Córdoba, Colombia</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nav = document.querySelector('nav');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 60) {
+          nav.style.background = 'rgba(13, 27, 42, 0.98)';
+          nav.style.boxShadow  = '0 2px 20px rgba(0,0,0,0.4)';
+        } else {
+          nav.style.background = 'rgba(13, 27, 42, 0.85)';
+          nav.style.boxShadow  = 'none';
+        }
+      });
+
+      document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', e => {
+          const target = document.querySelector(link.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            const top = target.getBoundingClientRect().top + window.scrollY - nav.offsetHeight;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        });
+      });
+
+      const fadeTargets = document.querySelectorAll(
+        '.hab-card, .servicio-card, .plataforma-item, .mision-text, .mision-img, .testimonio-card'
+      );
+      fadeTargets.forEach((el, i) => {
+        el.style.opacity    = '0';
+        el.style.transform  = 'translateY(36px)';
+        el.style.transition = `opacity 0.65s ease ${(i % 4) * 0.1}s, transform 0.65s ease ${(i % 4) * 0.1}s`;
+      });
+      const fadeObs = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity   = '1';
+            entry.target.style.transform = 'translateY(0)';
+            fadeObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      fadeTargets.forEach(el => fadeObs.observe(el));
+
+      const btnN   = document.querySelector('.btn-newsletter');
+      const inputN = document.querySelector('.newsletter-input');
+      if (btnN && inputN) {
+        btnN.addEventListener('click', () => {
+          const email = inputN.value.trim();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            inputN.style.borderColor = '#e53e3e';
+            return;
+          }
+          inputN.style.borderColor  = '#38a169';
+          btnN.textContent          = '¡Suscrito! ✓';
+          btnN.style.background     = '#38a169';
+          btnN.disabled             = true;
+          inputN.value              = '';
+          setTimeout(() => {
+            btnN.textContent      = 'Suscribirse';
+            btnN.style.background = '';
+            btnN.disabled         = false;
+            inputN.style.borderColor = '';
+          }, 3500);
+        });
+        inputN.addEventListener('input', () => inputN.style.borderColor = '');
+      }
+
+      document.querySelectorAll('.servicio-card').forEach(card => {
+        const icon = card.querySelector('.servicio-icon');
+        if (!icon) return;
+        card.addEventListener('mouseenter', () => {
+          icon.style.transform  = 'scale(1.15) rotate(-8deg)';
+          icon.style.transition = 'transform 0.25s ease';
+        });
+        card.addEventListener('mouseleave', () => {
+          icon.style.transform = 'scale(1) rotate(0deg)';
+        });
+      });
+
+      const heroContent = document.querySelector('.hero-content');
+      if (heroContent) {
+        heroContent.style.opacity    = '0';
+        heroContent.style.transform  = 'translateY(24px)';
+        heroContent.style.transition = 'opacity 0.9s ease 0.2s, transform 0.9s ease 0.2s';
+        requestAnimationFrame(() => {
+          heroContent.style.opacity   = '1';
+          heroContent.style.transform = 'translateY(0)';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

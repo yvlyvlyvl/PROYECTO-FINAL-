@@ -1,0 +1,115 @@
+{% extends 'crud_app/base.html' %}
+{% load static %}
+
+{% block title %}Nueva Contraseña — ProyectoUCC{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    background-image: url("{% static 'crud_app/imagenes/tienda.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:80vh;">
+  <div class="card shadow" style="width:100%; max-width:420px; border-radius:14px;">
+    <div class="card-body p-4">
+
+      <div class="text-center mb-4">
+        <div style="width:60px; height:60px; background:#eff6ff; border-radius:50%;
+                    display:flex; align-items:center; justify-content:center;
+                    margin:0 auto; font-size:1.8rem;">
+          🔑
+        </div>
+        <h2 class="mt-3 fw-bold">Nueva Contraseña</h2>
+        <p class="text-muted" style="font-size:13px;">
+          Ingresa tu nueva contraseña
+        </p>
+      </div>
+
+      <form method="POST" id="nuevaPassForm">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nueva contraseña</label>
+          <div class="input-group">
+            <input type="password" class="form-control" name="password1"
+                   id="pass1" placeholder="Mínimo 6 caracteres" required>
+            <button type="button" class="btn btn-outline-secondary"
+                    onclick="togglePass('pass1', this)">👁️</button>
+          </div>
+          <div class="progress mt-2 mb-1">
+            <div id="strengthBar" class="progress-bar" style="width:0%"></div>
+          </div>
+          <small id="strengthText"></small>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Confirmar contraseña</label>
+          <div class="input-group">
+            <input type="password" class="form-control" name="password2"
+                   id="pass2" placeholder="Repite tu contraseña" required>
+            <button type="button" class="btn btn-outline-secondary"
+                    onclick="togglePass('pass2', this)">👁️</button>
+          </div>
+          <small id="passError" class="text-danger"></small>
+        </div>
+
+        <div class="d-grid mb-3">
+          <button type="submit" class="btn btn-success">
+            💾 Guardar Contraseña
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePass(id, btn) {
+    const input = document.getElementById(id);
+    const type  = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+    btn.textContent = type === 'password' ? '👁️' : '🙈';
+  }
+
+  const pass1       = document.getElementById('pass1');
+  const pass2       = document.getElementById('pass2');
+  const passError   = document.getElementById('passError');
+  const strengthBar = document.getElementById('strengthBar');
+  const strengthText= document.getElementById('strengthText');
+
+  pass1.addEventListener('keyup', function () {
+    const val = pass1.value;
+    let strength = 0;
+    if (val.length >= 6) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[@$!%*?&#]/.test(val)) strength++;
+
+    if (strength <= 1) {
+      strengthBar.style.width = '33%';
+      strengthBar.className = 'progress-bar bg-danger';
+      strengthText.textContent = 'Contraseña débil';
+    } else if (strength === 2) {
+      strengthBar.style.width = '66%';
+      strengthBar.className = 'progress-bar bg-warning';
+      strengthText.textContent = 'Contraseña media';
+    } else {
+      strengthBar.style.width = '100%';
+      strengthBar.className = 'progress-bar bg-success';
+      strengthText.textContent = 'Contraseña fuerte';
+    }
+  });
+
+  pass2.addEventListener('keyup', function () {
+    passError.textContent = (pass1.value !== pass2.value)
+      ? '⚠ Las contraseñas no coinciden' : '';
+  });
+</script>
+
+{% endblock %}
