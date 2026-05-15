@@ -1,0 +1,36 @@
+# =============================================
+# requirements.txt — Hotel UCC
+# Proyecto Final | Herramientas Computacionales
+# =============================================
+# Instalar con: pip install -r requirements.txt
+
+# --- Framework Web ---
+Django==6.0.4
+
+# --- Base de Datos MySQL ---
+mysqlclient==2.2.4
+# Alternativa si mysqlclient falla en Windows:
+# PyMySQL==1.1.1
+
+# --- Variables de entorno ---
+python-dotenv==1.0.1
+
+# --- Generación de PDF (facturas) ---
+reportlab==4.2.5
+
+# --- Procesamiento de imágenes (ImageField en modelos) ---
+Pillow==10.4.0
+
+# =============================================
+# NOTAS DE INSTALACIÓN:
+#
+# Si mysqlclient falla en Windows, usa PyMySQL:
+#   1. Instala: pip install PyMySQL
+#   2. En proyecto_UCC/__init__.py agrega:
+#      import pymysql
+#      pymysql.install_as_MySQLdb()
+#
+# Requiere XAMPP o MySQL corriendo en puerto 3306.
+# Crea la BD antes de migrar:
+#   CREATE DATABASE hotel_ucc CHARACTER SET utf8mb4;
+# =============================================
