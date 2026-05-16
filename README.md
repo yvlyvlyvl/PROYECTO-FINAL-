@@ -11,7 +11,7 @@ Hotel Casa Marco es una plataforma de gestión hotelera que permite a los usuari
 
 - **Python 3.14**
 - **Django 6.0**
-- **SQLite** (base de datos)
+- **MySQL** (base de datos - requiere XAMMP)
 - **Bootstrap 5.3**
 - **Font Awesome 6.4**
 - **Chart.js** (reportes y gráficas)
